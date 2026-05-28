@@ -5,6 +5,11 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 from app.routers import analysis, health
 
 from app.utils.file_validator import (
@@ -60,3 +65,25 @@ async def root():
         "version": "1.0.0",
         "docs": "/docs",
     }
+
+@app.post("/upload")
+async def upload_file(file: UploadFile):
+
+    contents = await file.read()
+
+    if not validate_file_type(file.filename):
+        return {
+            "error": "Invalid file type"
+        }
+
+    if not validate_file_size(len(contents)):
+        return {
+            "error": "File size exceeds limit"
+        }
+
+    return {
+        "message": "File uploaded successfully"
+    }
+
+api_key = os.getenv("OPENAI_API_KEY")
+print(api_key)
