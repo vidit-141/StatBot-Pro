@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -86,4 +86,4 @@ async def upload_file(file: UploadFile):
     }
 
 api_key = os.getenv("OPENAI_API_KEY")
-print(api_key)
+print("OPENAI_API_KEY loaded:", bool(api_key))
