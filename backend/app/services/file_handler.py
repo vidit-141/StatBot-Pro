@@ -53,6 +53,16 @@ async def parse_upload(file: UploadFile) -> tuple[pd.DataFrame, DatasetInfo]:
             df = _read_csv_bytes(contents, sep="\t")
         else:
             df = _read_csv_bytes(contents)
+
+        # try to infer better dtypes - converts strings to numbers where possible
+        df = df.infer_objects()
+
+        for col in df.select_dtypes(include="object"):
+            try:
+                df[col] = pd.to_numeric(df[col])
+            except (ValueError, TypeError):
+                pass
+
     except HTTPException:
         raise
     except Exception as exc:
@@ -79,6 +89,7 @@ def _read_csv_bytes(contents: bytes, sep: str = ",") -> pd.DataFrame:
             return pd.read_csv(io.StringIO(text), sep=sep)
         except UnicodeDecodeError:
             continue
+
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Could not decode file (tried utf-8 and latin-1).",
@@ -87,10 +98,10 @@ def _read_csv_bytes(contents: bytes, sep: str = ",") -> pd.DataFrame:
 
 def _build_dataset_info(df: pd.DataFrame, filename: str, size_bytes: int) -> DatasetInfo:
     columns = []
+
     for col in df.columns:
-        sample = (
-            df[col].dropna().astype(str).head(3).tolist()
-        )
+        sample = df[col].dropna().astype(str).head(3).tolist()
+
         columns.append(
             DatasetColumn(
                 name=str(col),
