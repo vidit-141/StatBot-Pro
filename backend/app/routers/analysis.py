@@ -10,6 +10,14 @@ from app.services.agent import CSVAnalystAgent
 from app.models.schemas import AnalysisResponse, DatasetInfo
 from app.services.session_store import get_history, clear_session
 
+
+#rate limiting 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from fastapi import Request
+
+limiter = Limiter(key_func=get_remote_address)
+
 SUPPORTED_EXTENSIONS = {".csv", ".xlsx", ".xls", ".tsv"}
 MAX_QUESTION_LENGTH = 500
 
@@ -71,3 +79,13 @@ async def delete_session(session_id: str):
     """Clear conversation history for a session."""
     clear_session(session_id)
     return {"session_id": session_id, "cleared": True}
+
+@router.post("/upload-and-ask", response_model=AnalysisResponse)
+@limiter.limit("10/minute")
+async def upload_and_ask(
+    request: Request,
+    file: UploadFile = File(...),
+    question: str = Form(...),
+    session_id: Optional[str] = Form(None),
+):
+    
