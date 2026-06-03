@@ -25,32 +25,50 @@ StatBot Pro is an autonomous data analyst agent built for business users who nee
 
 ## Architecture
 
-statbot-pro/
-├── backend/                     FastAPI + LangChain Agent
-│   ├── main.py                  App entrypoint, CORS, static file serving
-│   └── app/
-│       ├── routers/
-│       │   ├── analysis.py      POST /api/analysis/upload-and-ask
-│       │   └── health.py        GET  /api/health
-│       ├── services/
-│       │   ├── agent.py         LangGraph ReAct agent with self-correction
-│       │   ├── file_handler.py  CSV/Excel parsing and validation
-│       │   └── session_store.py In-memory conversation history
-│       ├── models/
-│       │   └── schemas.py       Pydantic request/response models
-│       └── utils/
-│           └── sandbox.py       Restricted Python REPL execution engine
-│
-├── frontend/                    Next.js 14 App Router
-│   └── src/
-│       ├── app/                 Pages and global styles
-│       ├── components/          FileDropzone, AgentThinking, AnalysisResult
-│       ├── lib/                 Axios API client, config
-│       └── types/               Shared TypeScript interfaces
-│
-└── docker-compose.yml           Full stack in one command
+# StatBot-Pro Architecture
 
----
+```text
+statbot-pro/
+│
+├── backend/                           # FastAPI + LangGraph backend
+│   │
+│   ├── main.py                        # Application entrypoint, CORS, static serving
+│   │
+│   └── app/
+│       │
+│       ├── routers/                   # API endpoints
+│       │   ├── analysis.py            # POST /api/analysis/upload-and-ask
+│       │   └── health.py              # GET /api/health
+│       │
+│       ├── services/                  # Core business logic
+│       │   ├── agent.py               # LangGraph ReAct agent + self-correction
+│       │   ├── file_handler.py        # CSV/Excel parsing & validation
+│       │   └── session_store.py       # In-memory conversation history
+│       │
+│       ├── models/                    # Data schemas
+│       │   └── schemas.py             # Pydantic request/response models
+│       │
+│       └── utils/
+│           └── sandbox.py             # Restricted Python execution engine
+│
+├── frontend/                          # Next.js 14 App Router
+│   │
+│   └── src/
+│       │
+│       ├── app/                       # Pages and global styles
+│       ├── components/                # UI components
+│       │   ├── FileDropzone
+│       │   ├── AgentThinking
+│       │   └── AnalysisResult
+│       │
+│       ├── lib/                       # Axios API client + config
+│       └── types/                     # Shared TypeScript types
+│
+├── docker-compose.yml                 # One-command full stack startup
+│
+└── README.md                          # Project documentation
+```
+
 
 ## Quick Start
 
