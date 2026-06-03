@@ -143,21 +143,24 @@ class SandboxedREPL:
         }
 
     def _static_check(self, code: str):
-        """Raise if code contains obviously dangerous patterns."""
+        #Raise if code contains dangerous patterns.
         lower = code.lower()
-        dangerous_patterns = [
-            "os.system",
-            "os.popen",
-            "subprocess",
-            "shutil.rmtree",
-            "__import__",
-            "open(",
-            "socket.",
-            "requests.",
-            "urllib.",
-        ]
-        for pattern in dangerous_patterns:
+    
+        dangerous_patterns = {
+            "os.system":    "System commands are not allowed",
+            "os.popen":     "System commands are not allowed", 
+            "subprocess":   "Subprocess execution is not allowed",
+            "shutil.rmtree":"File system operations are not allowed",
+            "__import__":   "Dynamic imports are not allowed",
+            "open(":        "File system access is not allowed",
+            "socket.":      "Network access is not allowed",
+            "requests.":    "Network access is not allowed",
+            "urllib.":      "Network access is not allowed",
+        }
+    
+        for pattern, reason in dangerous_patterns.items():
             if pattern in lower:
                 raise SandboxViolationError(
-                    f"Pattern '{pattern}' is not allowed in the sandbox."
+                    f"Blocked: '{pattern}' — {reason}. "
+                    f"Only pandas, numpy, matplotlib and seaborn are allowed."
                 )

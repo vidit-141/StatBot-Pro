@@ -24,7 +24,34 @@ const EXAMPLE_QUESTIONS = [
   "Summarize the dataset with key statistics.",
   "Find missing values and show which columns are affected.",
   "Compare the distribution of values across categories.",
+   "What is the total sales by region?",
+  "Show me a bar chart of sales by product",
+  "Which month had the highest sales?",
+  "What is the average quantity per region?",
+  "Plot sales trend over the months",
 ];
+
+<div className="mt-2">
+  <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>
+    Try an example:
+  </p>
+  <div className="flex flex-wrap gap-2">
+    {EXAMPLE_QUESTIONS.map((q) => (
+      <button
+        key={q}
+        onClick={() => setQuestion(q)}
+        className="text-xs px-3 py-1 rounded-full border transition-all hover:opacity-80"
+        style={{
+          borderColor: "var(--border)",
+          color: "var(--text-secondary)",
+          background: "var(--bg-surface)",
+        }}
+      >
+        {q}
+      </button>
+    ))}
+  </div>
+</div>
 
 const MAX_CHARS = 500;
 
