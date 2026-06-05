@@ -23,3 +23,5 @@ seaborn>=0.13.0
 
 # Static files
 aiofiles>=23.2.1
+
+slowapi>=0.1.9
