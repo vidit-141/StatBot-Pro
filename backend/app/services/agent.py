@@ -12,7 +12,9 @@ import time
 import pandas as pd
 from typing import Optional
 
+#from langchain_openai import ChatOpenAI
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.tools import Tool
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.prebuilt import create_react_agent
@@ -62,11 +64,14 @@ def _build_df_info(df: pd.DataFrame) -> str:
 class CSVAnalystAgent:
     def __init__(self):
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.groq_api_key = os.getenv("GROQ_API_KEY")
+        self.llm_provider = os.getenv("LLM_PROVIDER", "groq")
         self.model = os.getenv("OPENAI_MODEL", "gpt-4o")
+        self.groq_model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
         self.max_iterations = int(os.getenv("MAX_ITERATIONS", "10"))
         self.charts_dir = os.getenv("CHARTS_DIR", "static/charts")
         self.charts_base_url = os.getenv(
-            "CHARTS_BASE_URL", "http://localhost:8000/static/charts"
+        "CHARTS_BASE_URL", "http://localhost:8000/static/charts"
         )
 
     def _make_repl_tool(self, df: pd.DataFrame, repl: SandboxedREPL):
@@ -109,12 +114,12 @@ class CSVAnalystAgent:
         session_id = session_id or uuid.uuid4().hex
         start_time = time.time()
 
-        if not self.openai_api_key:
+        if not self.groq_api_key and not self.openai_api_key:
             return AnalysisResponse(
                 session_id=session_id,
                 status=AnalysisStatus.ERROR,
                 question=question,
-                error="OPENAI_API_KEY is not configured. Please set it in backend/.env",
+                error="No API key configured. Add GROQ_API_KEY or OPENAI_API_KEY to backend/.env",
             )
 
         repl = SandboxedREPL(self.charts_dir, self.charts_base_url)
@@ -123,11 +128,20 @@ class CSVAnalystAgent:
         df_info = _build_df_info(df)
         system_msg = SYSTEM_PROMPT.format(df_info=df_info)
 
-        llm = ChatOpenAI(
-            model=self.model,
-            temperature=0,
-            api_key=self.openai_api_key,
-        )
+        # use Groq by default - free and fast
+        # set LLM_PROVIDER=openai in .env to switch back
+        if self.llm_provider == "groq" and self.groq_api_key:
+            llm = ChatGroq(
+                model=self.groq_model,
+                temperature=0,
+                api_key=self.groq_api_key,
+            )
+        else:
+            llm = ChatOpenAI(
+                model=self.model,
+                temperature=0,
+                api_key=self.openai_api_key,
+            )
 
         # langgraph ReAct agent - works with langchain >= 1.0
         agent = create_react_agent(
