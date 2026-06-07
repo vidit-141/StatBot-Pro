@@ -118,8 +118,7 @@ class SandboxedREPL:
         # Static analysis — block dangerous patterns
         self._static_check(code)
 
-        safe_globals = _create_safe_globals(self.charts_dir, self.charts_base_url)
-        safe_globals["df"] = df  # inject the real dataframe
+        safe_globals = _create_safe_globals(df, self.charts_dir, self.charts_base_url)
 
         stdout_capture = io.StringIO()
         error = None
