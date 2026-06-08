@@ -13,6 +13,7 @@ import time
 import pandas as pd
 from typing import Optional
 
+#from langchain_openai import ChatOpenAI
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_core.tools import Tool
@@ -61,7 +62,6 @@ print("South leads with highest sales at 267000, followed by North at 252000.")
 ```
 """
 
-
 def _build_df_info(df: pd.DataFrame) -> str:
     info_lines = [
         f"Shape: {df.shape[0]} rows x {df.shape[1]} columns",
@@ -86,7 +86,7 @@ class CSVAnalystAgent:
         self.max_iterations = int(os.getenv("MAX_ITERATIONS", "10"))
         self.charts_dir = os.getenv("CHARTS_DIR", "static/charts")
         self.charts_base_url = os.getenv(
-            "CHARTS_BASE_URL", "http://localhost:8000/static/charts"
+        "CHARTS_BASE_URL", "http://localhost:8000/static/charts"
         )
 
     def _make_repl_tool(self, df: pd.DataFrame, repl: SandboxedREPL):
