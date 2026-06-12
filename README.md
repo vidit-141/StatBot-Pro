@@ -172,6 +172,11 @@ All AI-generated code runs inside a sandboxed REPL before being executed. A stat
 
 ---
 
+## Screenshots
+
+![Upload page ](""C:\Users\vidit\OneDrive\Pictures\Screenshots\Screenshot 2026-06-12 093016.png"")
+![Chart Generation]("C:\Users\vidit\OneDrive\Pictures\Screenshots\Screenshot 2026-06-12 092440.png")
+
 ## Tech Stack
 
 | Layer | Technology |
